@@ -20,16 +20,25 @@
   const DEBOUNCE_MS        = 600;
   const PREVIEW_HIDE_DELAY = 800;
 
+  // Returns false when the extension has been reloaded and this content script
+  // is now orphaned — all chrome.* calls would throw "Extension context invalidated".
+  function ctxOk() {
+    try { return !!chrome.runtime?.id; } catch { return false; }
+  }
+
   // ─── Bootstrap ──────────────────────────────────────────────────────────────
 
   function init() {
-    chrome.storage.local.get(
-      { kpNavEnabled: true, kpFoldersEnabled: true },
-      ({ kpNavEnabled, kpFoldersEnabled }) => {
-        if (kpNavEnabled)     enableNav();
-        if (kpFoldersEnabled) enableFolders();
-      }
-    );
+    if (!ctxOk()) return;
+    try {
+      chrome.storage.local.get(
+        { kpNavEnabled: true, kpFoldersEnabled: true },
+        ({ kpNavEnabled, kpFoldersEnabled }) => {
+          if (kpNavEnabled)     enableNav();
+          if (kpFoldersEnabled) enableFolders();
+        }
+      );
+    } catch { /* context invalidated */ }
   }
 
   function enableNav() {
@@ -353,16 +362,19 @@
   // ─── Folder Manager ──────────────────────────────────────────────────────────
 
   function initFolders() {
-    chrome.storage.local.get({ kpFolders: [] }, ({ kpFolders }) => {
-      folderData = kpFolders;
-      let attempts = 0;
-      function retry() {
-        if (tryInjectPanel()) return;
-        if (attempts++ < 10) setTimeout(retry, 300);
-      }
-      retry();
-      watchSidebarForFolders();
-    });
+    if (!ctxOk()) return;
+    try {
+      chrome.storage.local.get({ kpFolders: [] }, ({ kpFolders }) => {
+        folderData = kpFolders;
+        let attempts = 0;
+        function retry() {
+          if (tryInjectPanel()) return;
+          if (attempts++ < 10) setTimeout(retry, 300);
+        }
+        retry();
+        watchSidebarForFolders();
+      });
+    } catch { /* context invalidated */ }
   }
 
   function tryInjectPanel() {
@@ -388,8 +400,8 @@
     const titleLabel = document.createElement('div');
     titleLabel.className = 'kp-fp-title-label';
     titleLabel.innerHTML =
-      '<svg class="kp-fp-title-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' +
-      '<span class="kp-fp-title">文件夹</span>';
+      '<svg class="kp-fp-title-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' +
+      '<span class="kp-fp-title">文件夹管理</span>';
 
     const newBtn = document.createElement('button');
     newBtn.className = 'kp-fp-new-btn';
@@ -545,7 +557,8 @@
   }
 
   function saveFolders() {
-    chrome.storage.local.set({ kpFolders: folderData });
+    if (!ctxOk()) return;
+    try { chrome.storage.local.set({ kpFolders: folderData }); } catch { /* context invalidated */ }
   }
 
   function genId() {
@@ -760,7 +773,7 @@
 
   // ─── Popup messaging ─────────────────────────────────────────────────────────
 
-  chrome.runtime.onMessage.addListener((msg) => {
+  try { chrome.runtime.onMessage.addListener((msg) => {
     if (msg.type === 'kp-toggle-nav') {
       if (msg.enabled) {
         if (!navEl) buildUI();
@@ -777,7 +790,7 @@
         disableFolders();
       }
     }
-  });
+  }); } catch { /* context invalidated */ }
 
   // ─── Entry ───────────────────────────────────────────────────────────────────
 
