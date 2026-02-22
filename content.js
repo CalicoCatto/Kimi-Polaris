@@ -10,7 +10,12 @@
   let navItems  = [];
   let rebuildTimer     = null;
   let hidePreviewTimer = null;
-  let cachedScrollEl   = null; // the element that actually scrolls the chat
+  let cachedScrollEl   = null; 
+
+  let folderData     = [];
+  let kpDragState    = null;
+  let folderObserver = null;
+  let syncTimer      = null;
 
   const DEBOUNCE_MS        = 600;
   const PREVIEW_HIDE_DELAY = 800;
@@ -28,6 +33,7 @@
     scan();
     observeDOM();
     attachScrollListeners();
+    setTimeout(initFolders, 300);
   }
 
   // ─── Build UI ───────────────────────────────────────────────────────────────
@@ -57,14 +63,11 @@
 
   // ─── Scroll helpers ─────────────────────────────────────────────────────────
 
-  // Walk up the DOM from a chat item to find the element that actually scrolls.
-  // Kimi renders chat in an inner scrollable div, not window.
   function findChatScrollContainer() {
     if (cachedScrollEl && document.body.contains(cachedScrollEl)) {
       return cachedScrollEl;
     }
 
-    // Start from a real chat item so we walk the right branch of the tree
     const anchor = document.querySelector('.chat-content-item');
     if (anchor) {
       let el = anchor.parentElement;
@@ -81,7 +84,6 @@
       }
     }
 
-    // Named-selector fallbacks (from the known Kimi DOM structure)
     for (const sel of ['.chat-detail-main', '.layout-content-main', '#chat-container']) {
       const el = document.querySelector(sel);
       if (el && el.scrollHeight > el.clientHeight + 10) {
@@ -93,13 +95,10 @@
     return null;
   }
 
-  // Custom rAF-driven scroll — bypasses browser smooth-scroll which Kimi's Vue
-  // event listeners cancel mid-flight on downward navigation.
   function animateScrollTo(container, to) {
     const from  = container.scrollTop;
     const delta = to - from;
     if (Math.abs(delta) < 2) return;
-    // Scale duration with distance, clamped to 200–500 ms
     const duration = Math.min(500, Math.max(200, Math.abs(delta) * 0.3));
     let startTs = null;
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
@@ -112,7 +111,6 @@
     requestAnimationFrame(step);
   }
 
-  // Scroll the target element to the top of the chat viewport.
   function scrollToTarget(target) {
     const container = findChatScrollContainer();
 
@@ -125,16 +123,11 @@
       );
       animateScrollTo(container, destination);
     } else {
-      // Fallback: standard scrollIntoView (works when the page itself scrolls)
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
   // ─── Collect anchors ────────────────────────────────────────────────────────
-  //
-  // One nav item per conversation turn — NOT per heading within a turn.
-  //   user turn  → label = first 30 chars of question text
-  //   assistant  → label = first heading or first paragraph summary
 
   function getHeadingPreview(headingEl) {
     const MAX = 260;
@@ -170,12 +163,8 @@
 
   function collectAnchors() {
     const anchors = [];
-
-    // Walk every top-level chat item in document order
     const items = document.querySelectorAll('.chat-content-item');
     items.forEach((item) => {
-
-      // ── User question ──────────────────────────────────────────────────────
       if (item.classList.contains('chat-content-item-user')) {
         const uc = item.querySelector('.user-content');
         if (!uc) return;
@@ -188,17 +177,12 @@
           text:        truncate(text, 30),
           previewBody: truncate(text, 320),
         });
-
-      // ── Assistant reply ────────────────────────────────────────────────────
       } else if (item.classList.contains('chat-content-item-assistant')) {
-        // Target only the main response markdown, not thinking/toolcall blocks
         const md = item.querySelector(
           '.markdown-container:not(.toolcall-content-text) .markdown'
         );
         if (!md) return;
 
-        // Always start from the very first text node in the reply,
-        // regardless of whether there are headings.
         const firstPara = md.querySelector('.paragraph, p, li');
         if (!firstPara) return;
         const raw = firstPara.textContent.trim();
@@ -298,12 +282,8 @@
 
   function attachScrollListeners() {
     const onScroll = () => requestAnimationFrame(updateActive);
-
-    // Always cover window scroll as a fallback
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    // Attach to the real inner scroll container once it's available.
-    // Retry a few times in case the SPA hasn't mounted yet.
     let attempts = 0;
     function tryAttach() {
       const container = findChatScrollContainer();
@@ -328,7 +308,6 @@
           if (
             node.matches?.('.chat-content-item') ||
             node.querySelector?.('.chat-content-item') ||
-            // Streaming: content being added inside existing assistant messages
             node.closest?.('.markdown') ||
             node.matches?.('.paragraph, h1, h2, h3')
           ) {
@@ -344,6 +323,398 @@
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // ─── Folder Manager ──────────────────────────────────────────────────────────
+
+  function initFolders() {
+    chrome.storage.local.get({ kpFolders: [] }, ({ kpFolders }) => {
+      folderData = kpFolders;
+      let attempts = 0;
+      function retry() {
+        if (tryInjectPanel()) return;
+        if (attempts++ < 10) setTimeout(retry, 300);
+      }
+      retry();
+      watchSidebarForFolders();
+    });
+  }
+
+  function tryInjectPanel() {
+    if (document.getElementById('kp-folder-panel')) return true;
+    const historyPart = document.querySelector('.history-part');
+    if (!historyPart) return false;
+    const panel = document.createElement('div');
+    panel.id = 'kp-folder-panel';
+    historyPart.parentElement.insertBefore(panel, historyPart);
+    renderFolderPanel();
+    makeChatsDraggable();
+    return true;
+  }
+
+  function renderFolderPanel() {
+    const panel = document.getElementById('kp-folder-panel');
+    if (!panel) return;
+    panel.innerHTML = '';
+
+    const titleRow = document.createElement('div');
+    titleRow.className = 'kp-fp-title-row';
+
+    const title = document.createElement('span');
+    title.className = 'kp-fp-title';
+    title.textContent = '文件夹';
+
+    const newBtn = document.createElement('button');
+    newBtn.className = 'kp-fp-new-btn';
+    newBtn.title = '新建文件夹';
+    newBtn.textContent = '+';
+    newBtn.addEventListener('click', createFolder);
+
+    titleRow.appendChild(title);
+    titleRow.appendChild(newBtn);
+    panel.appendChild(titleRow);
+
+    const list = document.createElement('div');
+    list.className = 'kp-fp-list';
+    folderData.forEach(folder => {
+      list.appendChild(buildFolderEl(folder, null));
+    });
+    panel.appendChild(list);
+  }
+
+  function buildFolderEl(folder, parentId) {
+    const wrap = document.createElement('div');
+    wrap.className = 'kp-fp-folder';
+
+    const row = document.createElement('div');
+    row.className = 'kp-fp-row';
+
+    const toggle = document.createElement('span');
+    toggle.className = 'kp-fp-toggle';
+    toggle.textContent = folder.open ? '▾' : '▸';
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'kp-fp-name';
+    nameSpan.dataset.folderId = folder.id;
+    nameSpan.textContent = folder.name;
+    
+    // 允许自然冒泡，所以单击名字也可以控制折叠展开
+    // 保留双击重命名
+    nameSpan.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      startRenameFolder(nameSpan, folder);
+    });
+
+    const btns = document.createElement('span');
+    btns.className = 'kp-fp-btns';
+
+    if (!parentId) {
+      const subBtn = document.createElement('button');
+      subBtn.className = 'kp-fp-btn kp-fp-sub';
+      subBtn.title = '新建子文件夹';
+      subBtn.textContent = '+';
+      subBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        createSub(folder.id);
+      });
+      btns.appendChild(subBtn);
+    }
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'kp-fp-btn kp-fp-del';
+    delBtn.title = '删除';
+    delBtn.textContent = '×';
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteFolder(folder.id, parentId);
+    });
+    btns.appendChild(delBtn);
+
+    row.appendChild(toggle);
+    row.appendChild(nameSpan);
+    row.appendChild(btns);
+
+    row.addEventListener('click', () => {
+      folder.open = !folder.open;
+      saveFolders();
+      renderFolderPanel();
+    });
+
+    // 绑定拖放事件到文件夹的 row 上
+    setupDrop(row, folder.id, parentId);
+    wrap.appendChild(row);
+
+    if (folder.open) {
+      const body = document.createElement('div');
+      body.className = 'kp-fp-body';
+
+      if (!parentId && folder.subs && folder.subs.length > 0) {
+        folder.subs.forEach(sub => {
+          body.appendChild(buildFolderEl(sub, folder.id));
+        });
+      }
+
+      if (folder.chats && folder.chats.length > 0) {
+        folder.chats.forEach(chat => {
+          body.appendChild(buildChatEl(chat, folder.id, parentId));
+        });
+      }
+
+      // 🚨这里彻底删除了原来生成多余 .kp-fp-dropzone 黑框DOM的代码🚨
+      // 现在将通过直接拖拽到文件夹名字所在的那一行(row)来实现拖放操作
+
+      wrap.appendChild(body);
+    }
+
+    return wrap;
+  }
+
+  function buildChatEl(chat, folderId, parentFolderId) {
+    const a = document.createElement('a');
+    a.className = 'kp-fp-chat';
+    a.href = '/chat/' + chat.id;
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'kp-fp-chat-name';
+    nameSpan.textContent = chat.name;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'kp-fp-btn kp-fp-del';
+    removeBtn.title = '从文件夹移除';
+    removeBtn.textContent = '×';
+    removeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      removeChatFromFolder(chat.id, folderId, parentFolderId);
+    });
+
+    a.appendChild(nameSpan);
+    a.appendChild(removeBtn);
+    return a;
+  }
+
+  function setupDrop(el, folderId, parentFolderId) {
+    el.addEventListener('dragover', (e) => {
+      if (!kpDragState) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      el.classList.add('kp-fp-drag-over');
+    });
+    el.addEventListener('dragleave', () => {
+      el.classList.remove('kp-fp-drag-over');
+    });
+    el.addEventListener('drop', (e) => {
+      e.preventDefault();
+      el.classList.remove('kp-fp-drag-over');
+      if (!kpDragState) return;
+      addChatToFolder(kpDragState.id, kpDragState.name, folderId, parentFolderId);
+    });
+  }
+
+  function saveFolders() {
+    chrome.storage.local.set({ kpFolders: folderData });
+  }
+
+  function genId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function createFolder() {
+    const folder = { id: genId(), name: '新文件夹', open: true, chats: [], subs: [] };
+    folderData.push(folder);
+    saveFolders();
+    renderFolderPanel();
+    const panel = document.getElementById('kp-folder-panel');
+    if (!panel) return;
+    const nameEl = panel.querySelector(`.kp-fp-name[data-folder-id="${folder.id}"]`);
+    if (nameEl) startRenameFolder(nameEl, folder);
+  }
+
+  function createSub(parentId) {
+    const parent = folderData.find(f => f.id === parentId);
+    if (!parent) return;
+    if (!parent.subs) parent.subs = [];
+    const sub = { id: genId(), name: '新子文件夹', open: true, chats: [] };
+    parent.subs.push(sub);
+    parent.open = true;
+    saveFolders();
+    renderFolderPanel();
+    const panel = document.getElementById('kp-folder-panel');
+    if (!panel) return;
+    const nameEl = panel.querySelector(`.kp-fp-name[data-folder-id="${sub.id}"]`);
+    if (nameEl) startRenameFolder(nameEl, sub);
+  }
+
+  function deleteFolder(id, parentId) {
+    if (parentId) {
+      const parent = folderData.find(f => f.id === parentId);
+      if (parent) parent.subs = parent.subs.filter(s => s.id !== id);
+    } else {
+      folderData = folderData.filter(f => f.id !== id);
+    }
+    saveFolders();
+    renderFolderPanel();
+  }
+
+  function addChatToFolder(chatId, chatName, folderId, parentFolderId) {
+    const folder = findFolder(folderId, parentFolderId);
+    if (!folder) return;
+    if (!folder.chats) folder.chats = [];
+    if (folder.chats.some(c => c.id === chatId)) return;
+    folder.chats.push({ id: chatId, name: chatName });
+    folder.open = true;
+    saveFolders();
+    renderFolderPanel();
+  }
+
+  function removeChatFromFolder(chatId, folderId, parentFolderId) {
+    const folder = findFolder(folderId, parentFolderId);
+    if (!folder) return;
+    folder.chats = folder.chats.filter(c => c.id !== chatId);
+    saveFolders();
+    renderFolderPanel();
+  }
+
+  function findFolder(folderId, parentFolderId) {
+    if (parentFolderId) {
+      const parent = folderData.find(f => f.id === parentFolderId);
+      return parent ? (parent.subs || []).find(s => s.id === folderId) || null : null;
+    }
+    return folderData.find(f => f.id === folderId) || null;
+  }
+
+  function startRenameFolder(nameEl, folderObj) {
+    const input = document.createElement('input');
+    input.className = 'kp-fp-rename-input';
+    input.type = 'text';
+    input.value = folderObj.name;
+    nameEl.replaceWith(input);
+    input.focus();
+    input.select();
+
+    let done = false;
+    function commit() {
+      if (done) return;
+      done = true;
+      const val = input.value.trim();
+      if (val) folderObj.name = val;
+      saveFolders();
+      renderFolderPanel();
+    }
+    function cancel() {
+      if (done) return;
+      done = true;
+      renderFolderPanel();
+    }
+
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+      if (e.key === 'Escape') { cancel(); }
+    });
+  }
+
+  function makeChatsDraggable() {
+    document.querySelectorAll('.sidebar-nav .chat-info-item:not([data-kp-drag])').forEach(item => {
+      item.setAttribute('data-kp-drag', '1');
+      item.draggable = true;
+
+      item.style.setProperty('-webkit-user-drag', 'element', 'important');
+      item.style.setProperty('user-drag', 'element', 'important');
+
+      item.addEventListener('dragstart', (e) => {
+        const href = item.getAttribute('href') || '';
+        const match = href.match(/\/chat\/([^/?#]+)/);
+        const chatId = match ? match[1] : '';
+        const nameEl = item.querySelector('.chat-name');
+        const chatName = nameEl ? nameEl.textContent.trim() : chatId;
+        kpDragState = { id: chatId, name: chatName };
+        e.dataTransfer.setData('text/plain', chatId);
+        e.dataTransfer.effectAllowed = 'copy';
+        item.classList.add('kp-fp-dragging');
+      });
+      
+      item.addEventListener('dragend', () => {
+        kpDragState = null;
+        item.classList.remove('kp-fp-dragging');
+      });
+    });
+  }
+
+  // 同步原生历史会话侧边栏的名字
+  function syncChatNames() {
+    let updated = false;
+    const nameMap = {};
+
+    document.querySelectorAll('.sidebar-nav .chat-info-item').forEach(item => {
+      const href = item.getAttribute('href') || '';
+      const match = href.match(/\/chat\/([^/?#]+)/);
+      if (match) {
+        const nameEl = item.querySelector('.chat-name');
+        if (nameEl) nameMap[match[1]] = nameEl.textContent.trim();
+      }
+    });
+
+    if (Object.keys(nameMap).length === 0) return;
+
+    function walk(folders) {
+      folders.forEach(f => {
+        if (f.chats) {
+          f.chats.forEach(c => {
+            if (nameMap[c.id] && c.name !== nameMap[c.id]) {
+              c.name = nameMap[c.id];
+              updated = true;
+            }
+          });
+        }
+        if (f.subs) walk(f.subs);
+      });
+    }
+
+    walk(folderData);
+
+    if (updated) {
+      saveFolders();
+      if (!document.querySelector('.kp-fp-rename-input')) {
+        renderFolderPanel();
+      }
+    }
+  }
+
+  function watchSidebarForFolders() {
+    if (folderObserver) return;
+    folderObserver = new MutationObserver((mutations) => {
+      if (!document.getElementById('kp-folder-panel')) {
+        setTimeout(tryInjectPanel, 100);
+        return;
+      }
+      
+      let sidebarMutated = false;
+
+      for (const m of mutations) {
+        const target = m.target;
+        if (target.nodeType === Node.ELEMENT_NODE && target.closest('.sidebar-nav')) {
+           sidebarMutated = true;
+        } else if (target.nodeType === Node.TEXT_NODE && target.parentNode?.closest('.sidebar-nav')) {
+           sidebarMutated = true;
+        }
+
+        for (const node of m.addedNodes) {
+          if (node.nodeType !== Node.ELEMENT_NODE) continue;
+          if (node.closest?.('.sidebar-nav') || node.querySelector?.('.chat-info-item')) {
+            makeChatsDraggable();
+            sidebarMutated = true;
+          }
+        }
+      }
+
+      if (sidebarMutated) {
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(syncChatNames, 300);
+      }
+    });
+    
+    folderObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
 
   // ─── Utils ───────────────────────────────────────────────────────────────────

@@ -217,6 +217,195 @@
 }
 
 
+/* ══ Folder Manager Panel ════════════════════════════════════════════════════ */
+
+#kp-folder-panel {
+  padding: 0 0 6px;
+  user-select: none;
+}
+
+.kp-fp-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 4px;
+}
+
+.kp-fp-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.kp-fp-new-btn {
+  background: transparent;
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.kp-fp-new-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.kp-fp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0 8px;
+}
+
+.kp-fp-row {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  gap: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0 6px;
+}
+
+.kp-fp-row:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.kp-fp-row:hover .kp-fp-btns {
+  opacity: 1;
+}
+
+.kp-fp-toggle {
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.35);
+  width: 12px;
+  flex-shrink: 0;
+}
+
+.kp-fp-name {
+  flex: 1;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.75);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.kp-fp-btns {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+}
+
+.kp-fp-btn {
+  background: transparent;
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.kp-fp-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.kp-fp-del:hover {
+  background: rgba(239, 68, 68, 0.10);
+  color: rgba(239, 68, 68, 0.80);
+}
+
+.kp-fp-body {
+  padding-left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.kp-fp-chat {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 12.5px;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  gap: 4px;
+}
+
+.kp-fp-chat:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.kp-fp-chat-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kp-fp-chat .kp-fp-btn {
+  opacity: 0;
+}
+
+.kp-fp-chat:hover .kp-fp-btn {
+  opacity: 1;
+}
+
+.kp-fp-dropzone {
+  height: 26px;
+  border: 1.5px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.30);
+  margin-top: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.kp-fp-drag-over {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.50);
+  color: rgba(99, 102, 241, 0.80);
+}
+
+.kp-fp-rename-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  border-bottom: 1.5px solid #6366f1;
+  outline: none;
+  font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: rgba(0, 0, 0, 0.75);
+  padding: 0 2px;
+  min-width: 0;
+}
+
+.kp-fp-dragging {
+  opacity: 0.4;
+}
+
 /* ══ Dark mode ════════════════════════════════════════════════════════════════ */
 
 @media (prefers-color-scheme: dark) {
@@ -232,4 +421,19 @@
   .kp-assistant.kp-active .kp-label { color: #818cf8; }
 
   /* Preview card is always dark — no overrides needed */
+
+  /* ── Folder Manager dark mode ── */
+  .kp-fp-title           { color: rgba(255, 255, 255, 0.40); }
+  .kp-fp-new-btn         { color: rgba(255, 255, 255, 0.40); }
+  .kp-fp-new-btn:hover   { background: rgba(255, 255, 255, 0.08); }
+  .kp-fp-row:hover       { background: rgba(255, 255, 255, 0.06); }
+  .kp-fp-toggle          { color: rgba(255, 255, 255, 0.35); }
+  .kp-fp-name            { color: rgba(255, 255, 255, 0.75); }
+  .kp-fp-btn             { color: rgba(255, 255, 255, 0.40); }
+  .kp-fp-btn:hover       { background: rgba(255, 255, 255, 0.08); }
+  .kp-fp-del:hover       { background: rgba(239, 68, 68, 0.15); color: rgba(239, 68, 68, 0.85); }
+  .kp-fp-chat            { color: rgba(255, 255, 255, 0.60); }
+  .kp-fp-chat:hover      { background: rgba(255, 255, 255, 0.05); }
+  .kp-fp-dropzone        { border-color: rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.30); }
+  .kp-fp-rename-input    { color: rgba(255, 255, 255, 0.75); }
 }
