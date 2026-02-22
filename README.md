@@ -1,6 +1,6 @@
 
 <div align="center">
-  <img src="Icon/Kimi_Palaris_Icon2.png图标" width="200" />
+  <img src="Icon/Kimi_Palaris_Icon2.png" alt="Kimi Palaris 图标" width="200" />
 
 
 <h1>Kimi Polaris</h1>
