@@ -28,9 +28,10 @@
 
 我很喜欢 Moonshot 与 Kimi 的诗意，我也用了很多月光与音乐的元素。希望能让大家喜欢。
 
+### 目前仅支持Chrome浏览器和EDGE浏览器
 
 
-## 声明
+### 声明
 **Kimi Palaris** 是一款第三方浏览器扩展，与月之暗面（Moonshot AI）及 Kimi 官方无任何关联。  
 
 本扩展仅通过浏览器标准 API 对网页进行本地增强，不涉及对 Kimi 服务器的未授权访问。  
@@ -39,7 +40,7 @@
 
 
 
-## 如果有好的想法，或者反馈bug，欢迎联系我！
+### 如果有好的想法，或者反馈bug，欢迎联系我！
 <div align="center">
   <img src="Icon/WeChat_QR_Code.jpg" alt="My Wechat QR Code" width="200" />
 </div>
@@ -47,3 +48,9 @@
 
 
 
+## 开源协议 (License)
+
+本项目采用 [GPL-3.0 License](https://opensource.org/licenses/GPL-3.0) 授权协议。
+
+**协议补充说明：**
+你可以自由地使用、修改和分发本代码，但前提是任何基于本项目的衍生作品都必须同样以 GPL-3.0 协议开源。
