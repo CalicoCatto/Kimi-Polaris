@@ -385,9 +385,11 @@
     const titleRow = document.createElement('div');
     titleRow.className = 'kp-fp-title-row';
 
-    const title = document.createElement('span');
-    title.className = 'kp-fp-title';
-    title.textContent = '文件夹';
+    const titleLabel = document.createElement('div');
+    titleLabel.className = 'kp-fp-title-label';
+    titleLabel.innerHTML =
+      '<svg class="kp-fp-title-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' +
+      '<span class="kp-fp-title">文件夹</span>';
 
     const newBtn = document.createElement('button');
     newBtn.className = 'kp-fp-new-btn';
@@ -395,7 +397,7 @@
     newBtn.textContent = '+';
     newBtn.addEventListener('click', createFolder);
 
-    titleRow.appendChild(title);
+    titleRow.appendChild(titleLabel);
     titleRow.appendChild(newBtn);
     panel.appendChild(titleRow);
 
@@ -422,13 +424,6 @@
     nameSpan.className = 'kp-fp-name';
     nameSpan.dataset.folderId = folder.id;
     nameSpan.textContent = folder.name;
-    
-    // 允许自然冒泡，所以单击名字也可以控制折叠展开
-    // 保留双击重命名
-    nameSpan.addEventListener('dblclick', (e) => {
-      e.stopPropagation();
-      startRenameFolder(nameSpan, folder);
-    });
 
     const btns = document.createElement('span');
     btns.className = 'kp-fp-btns';
@@ -444,6 +439,19 @@
       });
       btns.appendChild(subBtn);
     }
+
+    const renameBtn = document.createElement('button');
+    renameBtn.className = 'kp-fp-btn kp-fp-rename';
+    renameBtn.title = '重命名';
+    renameBtn.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<line x1="18" y1="2" x2="22" y2="6"/>' +
+      '<path d="M7.5 20.5 19 9l-4-4L3.5 16.5 2 22z"/></svg>';
+    renameBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      startRenameFolder(nameSpan, folder);
+    });
+    btns.appendChild(renameBtn);
 
     const delBtn = document.createElement('button');
     delBtn.className = 'kp-fp-btn kp-fp-del';
