@@ -264,7 +264,7 @@
 
   function showPreview(itemEl, { type, title, body }) {
     previewEl.dataset.type = type;
-    previewEl.querySelector('.kpp-badge').textContent = type === 'user' ? '提问' : '回复';
+    previewEl.querySelector('.kpp-badge').textContent = type === 'user' ? '✦' : '🌙';
     previewEl.querySelector('.kpp-title').textContent = title;
     previewEl.querySelector('.kpp-body').textContent  = body || '';
 

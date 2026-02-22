@@ -84,9 +84,9 @@
 /* ── Assistant reply: white crescent ☽ with indigo glow ── */
 
 .kp-assistant .kp-dot::before {
-  content: '☽';
+  content: '🌙';
   color: #ffffff;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   display: inline-block;
   transform: translateX(-5px);
@@ -97,14 +97,14 @@
   transition: text-shadow 0.25s ease, font-size 0.2s ease;
 }
 .kp-assistant:hover .kp-dot::before {
-  font-size: 20px;
+  font-size: 18px;
   text-shadow:
     0 0 6px  rgba(99, 102, 241, 1.00),
     0 0 14px rgba(99, 102, 241, 0.80),
     0 0 30px rgba(139, 92, 246, 0.50);
 }
 .kp-assistant.kp-active .kp-dot::before {
-  font-size: 20px;
+  font-size: 18px;
   text-shadow:
     0 0 8px  rgba(99, 102, 241, 1.00),
     0 0 18px rgba(99, 102, 241, 0.85),
@@ -155,17 +155,17 @@
 #kimi-polaris-preview {
   position: fixed;
   right: 72px;
-  width: 300px;
+  width: 272px;
   z-index: 9998;
   pointer-events: none;
 
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 14px;
-  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.13);
-  padding: 15px 17px;
+  background: rgba(10, 10, 22, 0.93);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.50);
+  padding: 12px 14px;
 
   opacity: 0;
   transition: opacity 0.18s ease;
@@ -173,36 +173,30 @@
 
 #kimi-polaris-preview.kpp-visible { opacity: 1; }
 
-#kimi-polaris-preview[data-type="user"]      { border-left: 3px solid #f59e0b; }
-#kimi-polaris-preview[data-type="assistant"] { border-left: 3px solid #6366f1; }
+#kimi-polaris-preview[data-type="user"] {
+  border-left: 2px solid rgba(245, 158, 11, 0.65);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.50), -4px 0 18px rgba(245,158,11,0.08);
+}
+#kimi-polaris-preview[data-type="assistant"] {
+  border-left: 2px solid rgba(99, 102, 241, 0.65);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.50), -4px 0 18px rgba(99,102,241,0.08);
+}
 
-/* Badge */
+/* Badge — just the symbol, no text */
 .kpp-badge {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  border-radius: 5px;
-  padding: 2px 7px;
-  margin-bottom: 8px;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-}
-#kimi-polaris-preview[data-type="user"] .kpp-badge {
-  color: #b45309;
-  background: rgba(245, 158, 11, 0.12);
-}
-#kimi-polaris-preview[data-type="assistant"] .kpp-badge {
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.10);
+  display: block;
+  font-size: 13px;
+  margin-bottom: 7px;
+  line-height: 1;
 }
 
 /* Title */
 .kpp-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.45;
-  margin-bottom: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #e2e8f0;
+  line-height: 1.5;
+  margin-bottom: 6px;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -212,15 +206,16 @@
 
 /* Body */
 .kpp-body {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 11.5px;
+  color: rgba(148, 163, 184, 0.72);
   line-height: 1.65;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 
 /* ══ Dark mode ════════════════════════════════════════════════════════════════ */
 
@@ -236,20 +231,5 @@
   .kp-user .kp-label                { border-left-color: rgba(251, 191, 36, 0.55); }
   .kp-assistant.kp-active .kp-label { color: #818cf8; }
 
-  #kimi-polaris-preview {
-    background: rgba(24, 24, 34, 0.97);
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 36px rgba(0, 0, 0, 0.45);
-  }
-  .kpp-title { color: #f3f4f6; }
-  .kpp-body  { color: #9ca3af; }
-
-  #kimi-polaris-preview[data-type="user"] .kpp-badge {
-    color: #fcd34d;
-    background: rgba(251, 191, 36, 0.15);
-  }
-  #kimi-polaris-preview[data-type="assistant"] .kpp-badge {
-    color: #818cf8;
-    background: rgba(129, 140, 248, 0.12);
-  }
+  /* Preview card is always dark — no overrides needed */
 }
