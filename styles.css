@@ -4,7 +4,7 @@
 
 #kimi-polaris-nav {
   position: fixed;
-  right: 24px;           /* shifted left to avoid browser scrollbar overlap */
+  right: 24px;
   top: 50%;
   transform: translateY(-50%);
   width: 40px;
@@ -14,7 +14,7 @@
 
 #kimi-polaris-nav[data-empty] { display: none; }
 
-/* ─── Track ─────────────────────────────────────────────────────────────────── */
+/* ─── Track — no background, blends with page ───────────────────────────────── */
 
 .kp-track {
   position: relative;
@@ -26,27 +26,6 @@
   max-height: 72vh;
   overflow: hidden;
   align-items: flex-end;
-
-  background: rgba(250, 250, 252, 0.90);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 14px 0 0 14px;
-  border: 1px solid rgba(0, 0, 0, 0.07);
-  border-right: none;
-  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.07);
-}
-
-/* Vertical rail connecting all dots */
-.kp-track::before {
-  content: '';
-  position: absolute;
-  right: 12px;
-  top: 18px;
-  bottom: 18px;
-  width: 1.5px;
-  border-radius: 1px;
-  background: rgba(130, 130, 160, 0.14);
-  pointer-events: none;
 }
 
 /* ─── Individual item ───────────────────────────────────────────────────────── */
@@ -61,68 +40,75 @@
   width: 100%;
 }
 
-/* ─── Dots — both are circles, different sizes & colours ────────────────────── */
+/* ─── Dots — white symbols with colored glow ────────────────────────────────── */
 
 .kp-dot {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  border-radius: 50%;
-  transition: background 0.25s ease, box-shadow 0.25s ease,
-              width 0.2s ease, height 0.2s ease;
+  width: 16px;
+  height: 16px;
 }
 
-/* ── User question dot: small amber circle ── */
-.kp-user .kp-dot {
-  width:  8px;
-  height: 8px;
-  background: rgba(251, 191, 36, 0.65);
-  /* faint moonlight halo */
-  box-shadow:
-    0 0 4px 1px  rgba(251, 191, 36, 0.25),
-    0 0 10px 2px rgba(251, 191, 36, 0.10);
+/* ── User question: white star ✦ with amber glow ── */
+
+.kp-user .kp-dot::before {
+  content: '✦';
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-block;
+  transform: translateX(5px);
+  text-shadow:
+    0 0 4px  rgba(245, 158, 11, 0.95),
+    0 0 10px rgba(245, 158, 11, 0.65),
+    0 0 22px rgba(245, 158, 11, 0.35);
+  transition: text-shadow 0.25s ease, font-size 0.2s ease;
 }
-.kp-user:hover .kp-dot {
-  background: rgba(245, 158, 11, 0.85);
-  box-shadow:
-    0 0 6px 2px  rgba(245, 158, 11, 0.40),
-    0 0 14px 5px rgba(245, 158, 11, 0.15);
-  width:  10px;
-  height: 10px;
+.kp-user:hover .kp-dot::before {
+  font-size: 18px;
+  text-shadow:
+    0 0 6px  rgba(245, 158, 11, 1.00),
+    0 0 14px rgba(245, 158, 11, 0.80),
+    0 0 30px rgba(251, 191, 36, 0.50);
 }
-.kp-user.kp-active .kp-dot {
-  background: #f59e0b;
-  box-shadow:
-    0 0 7px 2px  rgba(245, 158, 11, 0.55),
-    0 0 18px 6px rgba(251, 191, 36, 0.20);
-  width:  10px;
-  height: 10px;
+.kp-user.kp-active .kp-dot::before {
+  font-size: 18px;
+  text-shadow:
+    0 0 6px  rgba(245, 158, 11, 1.00),
+    0 0 16px rgba(245, 158, 11, 0.85),
+    0 0 34px rgba(251, 191, 36, 0.55);
 }
 
-/* ── Assistant reply dot: larger indigo circle ── */
-.kp-assistant .kp-dot {
-  width:  12px;
-  height: 12px;
-  background: rgba(99, 102, 241, 0.50);
-  /* faint moonlight halo */
-  box-shadow:
-    0 0 5px 1px  rgba(99, 102, 241, 0.22),
-    0 0 12px 3px rgba(139, 92, 246, 0.10);
+/* ── Assistant reply: white crescent ☽ with indigo glow ── */
+
+.kp-assistant .kp-dot::before {
+  content: '☽';
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-block;
+  transform: translateX(-5px);
+  text-shadow:
+    0 0 4px  rgba(99, 102, 241, 0.95),
+    0 0 10px rgba(99, 102, 241, 0.65),
+    0 0 22px rgba(139, 92, 246, 0.35);
+  transition: text-shadow 0.25s ease, font-size 0.2s ease;
 }
-.kp-assistant:hover .kp-dot {
-  background: rgba(99, 102, 241, 0.80);
-  box-shadow:
-    0 0 7px 2px  rgba(99, 102, 241, 0.40),
-    0 0 16px 5px rgba(139, 92, 246, 0.18);
-  width:  14px;
-  height: 14px;
+.kp-assistant:hover .kp-dot::before {
+  font-size: 20px;
+  text-shadow:
+    0 0 6px  rgba(99, 102, 241, 1.00),
+    0 0 14px rgba(99, 102, 241, 0.80),
+    0 0 30px rgba(139, 92, 246, 0.50);
 }
-.kp-assistant.kp-active .kp-dot {
-  background: #6366f1;
-  box-shadow:
-    0 0 8px 3px  rgba(99, 102, 241, 0.55),
-    0 0 20px 7px rgba(139, 92, 246, 0.22);
-  width:  14px;
-  height: 14px;
+.kp-assistant.kp-active .kp-dot::before {
+  font-size: 20px;
+  text-shadow:
+    0 0 8px  rgba(99, 102, 241, 1.00),
+    0 0 18px rgba(99, 102, 241, 0.85),
+    0 0 36px rgba(139, 92, 246, 0.55);
 }
 
 /* ─── Label tooltip ─────────────────────────────────────────────────────────── */
@@ -161,14 +147,13 @@
   transform: translateY(-50%) translateX(0);
 }
 
-.kp-user .kp-label             { border-left: 2px solid rgba(245, 158, 11, 0.45); }
+.kp-user .kp-label                { border-left: 2px solid rgba(245, 158, 11, 0.45); }
 .kp-assistant.kp-active .kp-label { color: #6366f1; }
 
 /* ══ Preview card ════════════════════════════════════════════════════════════ */
 
 #kimi-polaris-preview {
   position: fixed;
-  /* nav is right:24px wide:40px → left edge at 64px; add 8px gap → 72px */
   right: 72px;
   width: 300px;
   z-index: 9998;
@@ -188,7 +173,6 @@
 
 #kimi-polaris-preview.kpp-visible { opacity: 1; }
 
-/* Left accent bar */
 #kimi-polaris-preview[data-type="user"]      { border-left: 3px solid #f59e0b; }
 #kimi-polaris-preview[data-type="assistant"] { border-left: 3px solid #6366f1; }
 
@@ -241,38 +225,7 @@
 /* ══ Dark mode ════════════════════════════════════════════════════════════════ */
 
 @media (prefers-color-scheme: dark) {
-  .kp-track {
-    background: rgba(24, 24, 34, 0.92);
-    border-color: rgba(255, 255, 255, 0.07);
-    box-shadow: -2px 0 16px rgba(0, 0, 0, 0.30);
-  }
-  .kp-track::before { background: rgba(200, 200, 220, 0.09); }
-
-  .kp-user .kp-dot {
-    background: rgba(251, 191, 36, 0.55);
-    box-shadow:
-      0 0 5px 1px  rgba(251, 191, 36, 0.28),
-      0 0 12px 3px rgba(251, 191, 36, 0.12);
-  }
-  .kp-user.kp-active .kp-dot {
-    background: #fbbf24;
-    box-shadow:
-      0 0 8px 3px  rgba(251, 191, 36, 0.55),
-      0 0 20px 7px rgba(251, 191, 36, 0.22);
-  }
-
-  .kp-assistant .kp-dot {
-    background: rgba(129, 140, 248, 0.55);
-    box-shadow:
-      0 0 6px 2px  rgba(129, 140, 248, 0.28),
-      0 0 14px 4px rgba(139, 92, 246, 0.12);
-  }
-  .kp-assistant.kp-active .kp-dot {
-    background: #818cf8;
-    box-shadow:
-      0 0 9px 3px  rgba(129, 140, 248, 0.55),
-      0 0 22px 8px rgba(139, 92, 246, 0.22);
-  }
+  /* Symbols are white with colored glow — identical in both modes, no overrides needed */
 
   .kp-label {
     color: #e5e7eb;
@@ -280,7 +233,7 @@
     border-color: rgba(255, 255, 255, 0.08);
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.40);
   }
-  .kp-user .kp-label             { border-left-color: rgba(251, 191, 36, 0.55); }
+  .kp-user .kp-label                { border-left-color: rgba(251, 191, 36, 0.55); }
   .kp-assistant.kp-active .kp-label { color: #818cf8; }
 
   #kimi-polaris-preview {
