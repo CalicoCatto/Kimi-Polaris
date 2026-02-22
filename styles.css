@@ -230,12 +230,31 @@
   justify-content: space-between;
   padding: 8px 12px 4px;
 }
+/*
+.kp-fp-title {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: rgba(255, 255, 255,0.84);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+
+}*/
 
 .kp-fp-title {
-  font-size: 12px;
+  /* 原有的基础字体设置 */
+  font-size: 14px;
+  line-height: 20px;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.4);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  /* 1. 颜色建议替换为官方的 CSS 变量，这样能完美自动跟随 Kimi 网页的【深/浅色模式】切换 */
+  color: rgba(255, 255, 255, .84);
+
+  /* 2. 增加防换行与省略号效果（完全复制官方参数） */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .kp-fp-new-btn {
@@ -245,7 +264,7 @@
   height: 22px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
   color: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
@@ -284,15 +303,15 @@
 }
 
 .kp-fp-toggle {
-  font-size: 10px;
-  color: rgba(0, 0, 0, 0.35);
-  width: 12px;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.5);
+  width: 20px;
   flex-shrink: 0;
 }
 
 .kp-fp-name {
   flex: 1;
-  font-size: 13px;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -313,7 +332,7 @@
   height: 20px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 18px;
   color: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
@@ -346,7 +365,7 @@
   border-radius: 6px;
   text-decoration: none;
   color: rgba(0, 0, 0, 0.65);
-  font-size: 12.5px;
+  font-size: 13px;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
   gap: 4px;
 }
@@ -370,18 +389,6 @@
   opacity: 1;
 }
 
-.kp-fp-dropzone {
-  height: 26px;
-  border: 1.5px dashed rgba(0, 0, 0, 0.15);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  color: rgba(0, 0, 0, 0.30);
-  margin-top: 2px;
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-}
 
 .kp-fp-drag-over {
   background: rgba(99, 102, 241, 0.08);
@@ -423,12 +430,12 @@
   /* Preview card is always dark — no overrides needed */
 
   /* ── Folder Manager dark mode ── */
-  .kp-fp-title           { color: rgba(255, 255, 255, 0.40); }
+  .kp-fp-title           { color: rgba(255, 255, 255, 0.84); }
   .kp-fp-new-btn         { color: rgba(255, 255, 255, 0.40); }
   .kp-fp-new-btn:hover   { background: rgba(255, 255, 255, 0.08); }
   .kp-fp-row:hover       { background: rgba(255, 255, 255, 0.06); }
   .kp-fp-toggle          { color: rgba(255, 255, 255, 0.35); }
-  .kp-fp-name            { color: rgba(255, 255, 255, 0.75); }
+  .kp-fp-name            { color: rgba(255, 255, 255, 0.84); }
   .kp-fp-btn             { color: rgba(255, 255, 255, 0.40); }
   .kp-fp-btn:hover       { background: rgba(255, 255, 255, 0.08); }
   .kp-fp-del:hover       { background: rgba(239, 68, 68, 0.15); color: rgba(239, 68, 68, 0.85); }

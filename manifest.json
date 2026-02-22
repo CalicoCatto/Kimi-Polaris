@@ -16,16 +16,16 @@
     "default_popup": "popup.html",
     "default_title": "Kimi Polaris",
     "default_icon": {
-      "16":  "Icon/Kimi_Palaris-Icon_828x828.png",
-      "32":  "Icon/Kimi_Palaris-Icon_828x828.png",
-      "48":  "Icon/Kimi_Palaris-Icon_828x828.png",
-      "128": "Icon/Kimi_Palaris-Icon_828x828.png"
+      "16":  "Icon/Kimi_Palaris_Icon2.png",
+      "32":  "Icon/Kimi_Palaris_Icon2.png",
+      "48":  "Icon/Kimi_Palaris_Icon2.png",
+      "128": "Icon/Kimi_Palaris_Icon2.png"
     }
   },
   "icons": {
-    "16":  "Icon/Kimi_Palaris-Icon_828x828.png",
-    "32":  "Icon/Kimi_Palaris-Icon_828x828.png",
-    "48":  "Icon/Kimi_Palaris-Icon_828x828.png",
-    "128": "Icon/Kimi_Palaris-Icon_828x828.png"
+    "16":  "Icon/Kimi_Palaris_Icon2.png",
+    "32":  "Icon/Kimi_Palaris_Icon2.png",
+    "48":  "Icon/Kimi_Palaris_Icon2.png",
+    "128": "Icon/Kimi_Palaris_Icon2.png"
   }
 }

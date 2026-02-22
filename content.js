@@ -23,17 +23,42 @@
   // ─── Bootstrap ──────────────────────────────────────────────────────────────
 
   function init() {
-    chrome.storage.local.get({ kimiPolarisEnabled: true }, ({ kimiPolarisEnabled }) => {
-      if (kimiPolarisEnabled) enable();
-    });
+    chrome.storage.local.get(
+      { kpNavEnabled: true, kpFoldersEnabled: true },
+      ({ kpNavEnabled, kpFoldersEnabled }) => {
+        if (kpNavEnabled)     enableNav();
+        if (kpFoldersEnabled) enableFolders();
+      }
+    );
   }
 
-  function enable() {
+  function enableNav() {
     buildUI();
     scan();
     observeDOM();
     attachScrollListeners();
+  }
+
+  function disableNav() {
+    if (navEl)     navEl.style.display     = 'none';
+    if (previewEl) previewEl.style.display = 'none';
+  }
+
+  function enableFolders() {
     setTimeout(initFolders, 300);
+  }
+
+  function disableFolders() {
+    const panel = document.getElementById('kp-folder-panel');
+    if (panel) panel.remove();
+    if (folderObserver) {
+      folderObserver.disconnect();
+      folderObserver = null;
+    }
+    document.querySelectorAll('.sidebar-nav .chat-info-item[data-kp-drag]').forEach(item => {
+      item.draggable = false;
+      item.removeAttribute('data-kp-drag');
+    });
   }
 
   // ─── Build UI ───────────────────────────────────────────────────────────────
@@ -728,15 +753,21 @@
   // ─── Popup messaging ─────────────────────────────────────────────────────────
 
   chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.type !== 'kp-toggle') return;
-    if (msg.enabled) {
-      if (!navEl) buildUI();
-      navEl.style.display     = '';
-      previewEl.style.display = '';
-      scan();
-    } else {
-      if (navEl)     navEl.style.display     = 'none';
-      if (previewEl) previewEl.style.display = 'none';
+    if (msg.type === 'kp-toggle-nav') {
+      if (msg.enabled) {
+        if (!navEl) buildUI();
+        navEl.style.display     = '';
+        previewEl.style.display = '';
+        scan();
+      } else {
+        disableNav();
+      }
+    } else if (msg.type === 'kp-toggle-folders') {
+      if (msg.enabled) {
+        enableFolders();
+      } else {
+        disableFolders();
+      }
     }
   });
 

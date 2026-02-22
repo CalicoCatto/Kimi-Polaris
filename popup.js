@@ -1,23 +1,38 @@
 // Kimi Polaris — popup script
 
-const toggleNav = document.getElementById('toggle-nav');
+const toggleNav     = document.getElementById('toggle-nav');
+const toggleFolders = document.getElementById('toggle-folders');
 
 // ─── Load saved state ───────────────────────────────────────────────────────
 
-chrome.storage.local.get({ kimiPolarisEnabled: true }, ({ kimiPolarisEnabled }) => {
-  toggleNav.checked = kimiPolarisEnabled;
-});
+chrome.storage.local.get(
+  { kpNavEnabled: true, kpFoldersEnabled: true },
+  ({ kpNavEnabled, kpFoldersEnabled }) => {
+    toggleNav.checked     = kpNavEnabled;
+    toggleFolders.checked = kpFoldersEnabled;
+  }
+);
 
-// ─── Persist and propagate changes ─────────────────────────────────────────
+// ─── Send message to active Kimi tab ────────────────────────────────────────
 
-toggleNav.addEventListener('change', () => {
-  const enabled = toggleNav.checked;
-  chrome.storage.local.set({ kimiPolarisEnabled: enabled });
-
-  // Forward to the active Kimi tab's content script (best-effort)
+function sendToggle(type, enabled) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const tab = tabs[0];
     if (!tab?.id) return;
-    chrome.tabs.sendMessage(tab.id, { type: 'kp-toggle', enabled }).catch(() => {});
+    chrome.tabs.sendMessage(tab.id, { type, enabled }).catch(() => {});
   });
+}
+
+// ─── Persist and propagate changes ──────────────────────────────────────────
+
+toggleNav.addEventListener('change', () => {
+  const enabled = toggleNav.checked;
+  chrome.storage.local.set({ kpNavEnabled: enabled });
+  sendToggle('kp-toggle-nav', enabled);
+});
+
+toggleFolders.addEventListener('change', () => {
+  const enabled = toggleFolders.checked;
+  chrome.storage.local.set({ kpFoldersEnabled: enabled });
+  sendToggle('kp-toggle-folders', enabled);
 });
