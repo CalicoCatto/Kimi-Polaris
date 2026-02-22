@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Kimi Polaris",
+  "version": "0.1.0",
+  "description": "增强 Kimi (kimi.moonshot.cn) 网页端体验",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.kimi.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Kimi Polaris",
+    "default_icon": {
+      "16":  "Icon/Kimi_Palaris-Icon_828x828.png",
+      "32":  "Icon/Kimi_Palaris-Icon_828x828.png",
+      "48":  "Icon/Kimi_Palaris-Icon_828x828.png",
+      "128": "Icon/Kimi_Palaris-Icon_828x828.png"
+    }
+  },
+  "icons": {
+    "16":  "Icon/Kimi_Palaris-Icon_828x828.png",
+    "32":  "Icon/Kimi_Palaris-Icon_828x828.png",
+    "48":  "Icon/Kimi_Palaris-Icon_828x828.png",
+    "128": "Icon/Kimi_Palaris-Icon_828x828.png"
+  }
+}

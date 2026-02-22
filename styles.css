@@ -1,0 +1,302 @@
+/* ─── Kimi Polaris ─────────────────────────────────────────────────────────── */
+
+/* ══ Navigation strip ════════════════════════════════════════════════════════ */
+
+#kimi-polaris-nav {
+  position: fixed;
+  right: 24px;           /* shifted left to avoid browser scrollbar overlap */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+#kimi-polaris-nav[data-empty] { display: none; }
+
+/* ─── Track ─────────────────────────────────────────────────────────────────── */
+
+.kp-track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 8px 18px 0;
+  pointer-events: all;
+  max-height: 72vh;
+  overflow: hidden;
+  align-items: flex-end;
+
+  background: rgba(250, 250, 252, 0.90);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 14px 0 0 14px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-right: none;
+  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.07);
+}
+
+/* Vertical rail connecting all dots */
+.kp-track::before {
+  content: '';
+  position: absolute;
+  right: 12px;
+  top: 18px;
+  bottom: 18px;
+  width: 1.5px;
+  border-radius: 1px;
+  background: rgba(130, 130, 160, 0.14);
+  pointer-events: none;
+}
+
+/* ─── Individual item ───────────────────────────────────────────────────────── */
+
+.kp-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 28px;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* ─── Dots — both are circles, different sizes & colours ────────────────────── */
+
+.kp-dot {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: background 0.25s ease, box-shadow 0.25s ease,
+              width 0.2s ease, height 0.2s ease;
+}
+
+/* ── User question dot: small amber circle ── */
+.kp-user .kp-dot {
+  width:  8px;
+  height: 8px;
+  background: rgba(251, 191, 36, 0.65);
+  /* faint moonlight halo */
+  box-shadow:
+    0 0 4px 1px  rgba(251, 191, 36, 0.25),
+    0 0 10px 2px rgba(251, 191, 36, 0.10);
+}
+.kp-user:hover .kp-dot {
+  background: rgba(245, 158, 11, 0.85);
+  box-shadow:
+    0 0 6px 2px  rgba(245, 158, 11, 0.40),
+    0 0 14px 5px rgba(245, 158, 11, 0.15);
+  width:  10px;
+  height: 10px;
+}
+.kp-user.kp-active .kp-dot {
+  background: #f59e0b;
+  box-shadow:
+    0 0 7px 2px  rgba(245, 158, 11, 0.55),
+    0 0 18px 6px rgba(251, 191, 36, 0.20);
+  width:  10px;
+  height: 10px;
+}
+
+/* ── Assistant reply dot: larger indigo circle ── */
+.kp-assistant .kp-dot {
+  width:  12px;
+  height: 12px;
+  background: rgba(99, 102, 241, 0.50);
+  /* faint moonlight halo */
+  box-shadow:
+    0 0 5px 1px  rgba(99, 102, 241, 0.22),
+    0 0 12px 3px rgba(139, 92, 246, 0.10);
+}
+.kp-assistant:hover .kp-dot {
+  background: rgba(99, 102, 241, 0.80);
+  box-shadow:
+    0 0 7px 2px  rgba(99, 102, 241, 0.40),
+    0 0 16px 5px rgba(139, 92, 246, 0.18);
+  width:  14px;
+  height: 14px;
+}
+.kp-assistant.kp-active .kp-dot {
+  background: #6366f1;
+  box-shadow:
+    0 0 8px 3px  rgba(99, 102, 241, 0.55),
+    0 0 20px 7px rgba(139, 92, 246, 0.22);
+  width:  14px;
+  height: 14px;
+}
+
+/* ─── Label tooltip ─────────────────────────────────────────────────────────── */
+
+.kp-label {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(8px);
+
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  font-size: 12px;
+  line-height: 1;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  color: #374151;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  padding: 5px 10px;
+  border-radius: 7px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.10);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.13s ease, transform 0.13s ease;
+}
+
+.kp-item:hover .kp-label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.kp-user .kp-label             { border-left: 2px solid rgba(245, 158, 11, 0.45); }
+.kp-assistant.kp-active .kp-label { color: #6366f1; }
+
+/* ══ Preview card ════════════════════════════════════════════════════════════ */
+
+#kimi-polaris-preview {
+  position: fixed;
+  /* nav is right:24px wide:40px → left edge at 64px; add 8px gap → 72px */
+  right: 72px;
+  width: 300px;
+  z-index: 9998;
+  pointer-events: none;
+
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.13);
+  padding: 15px 17px;
+
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+#kimi-polaris-preview.kpp-visible { opacity: 1; }
+
+/* Left accent bar */
+#kimi-polaris-preview[data-type="user"]      { border-left: 3px solid #f59e0b; }
+#kimi-polaris-preview[data-type="assistant"] { border-left: 3px solid #6366f1; }
+
+/* Badge */
+.kpp-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 5px;
+  padding: 2px 7px;
+  margin-bottom: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+#kimi-polaris-preview[data-type="user"] .kpp-badge {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.12);
+}
+#kimi-polaris-preview[data-type="assistant"] .kpp-badge {
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.10);
+}
+
+/* Title */
+.kpp-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.45;
+  margin-bottom: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Body */
+.kpp-body {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.65;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ══ Dark mode ════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: dark) {
+  .kp-track {
+    background: rgba(24, 24, 34, 0.92);
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow: -2px 0 16px rgba(0, 0, 0, 0.30);
+  }
+  .kp-track::before { background: rgba(200, 200, 220, 0.09); }
+
+  .kp-user .kp-dot {
+    background: rgba(251, 191, 36, 0.55);
+    box-shadow:
+      0 0 5px 1px  rgba(251, 191, 36, 0.28),
+      0 0 12px 3px rgba(251, 191, 36, 0.12);
+  }
+  .kp-user.kp-active .kp-dot {
+    background: #fbbf24;
+    box-shadow:
+      0 0 8px 3px  rgba(251, 191, 36, 0.55),
+      0 0 20px 7px rgba(251, 191, 36, 0.22);
+  }
+
+  .kp-assistant .kp-dot {
+    background: rgba(129, 140, 248, 0.55);
+    box-shadow:
+      0 0 6px 2px  rgba(129, 140, 248, 0.28),
+      0 0 14px 4px rgba(139, 92, 246, 0.12);
+  }
+  .kp-assistant.kp-active .kp-dot {
+    background: #818cf8;
+    box-shadow:
+      0 0 9px 3px  rgba(129, 140, 248, 0.55),
+      0 0 22px 8px rgba(139, 92, 246, 0.22);
+  }
+
+  .kp-label {
+    color: #e5e7eb;
+    background: rgba(24, 24, 34, 0.97);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.40);
+  }
+  .kp-user .kp-label             { border-left-color: rgba(251, 191, 36, 0.55); }
+  .kp-assistant.kp-active .kp-label { color: #818cf8; }
+
+  #kimi-polaris-preview {
+    background: rgba(24, 24, 34, 0.97);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 36px rgba(0, 0, 0, 0.45);
+  }
+  .kpp-title { color: #f3f4f6; }
+  .kpp-body  { color: #9ca3af; }
+
+  #kimi-polaris-preview[data-type="user"] .kpp-badge {
+    color: #fcd34d;
+    background: rgba(251, 191, 36, 0.15);
+  }
+  #kimi-polaris-preview[data-type="assistant"] .kpp-badge {
+    color: #818cf8;
+    background: rgba(129, 140, 248, 0.12);
+  }
+}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Kimi Polaris</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 248px;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 13px;
+      color: #1f2937;
+      background: #ffffff;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 15px 12px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+      flex-shrink: 0;
+    }
+
+    .app-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      line-height: 1.2;
+    }
+
+    .app-version {
+      font-size: 10.5px;
+      color: #9ca3af;
+      margin-top: 1px;
+    }
+
+    /* ── Feature list ───────────────────────────────────────────────────── */
+    .features { padding: 6px 0; }
+
+    .feature-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 15px;
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+    }
+    .feature-row:hover { background: #f9fafb; }
+
+    .feature-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+
+    .feature-text { flex: 1; }
+
+    .feature-name {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #374151;
+      line-height: 1.3;
+    }
+
+    .feature-desc {
+      font-size: 10.5px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    /* ── Toggle switch ──────────────────────────────────────────────────── */
+    .toggle { position: relative; width: 36px; height: 21px; flex-shrink: 0; }
+    .toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: #d1d5db;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .toggle input:checked + .toggle-track { background: #6366f1; }
+    .toggle input:checked + .toggle-track::after { transform: translateX(15px); }
+
+    /* ── Footer ─────────────────────────────────────────────────────────── */
+    .footer {
+      padding: 8px 15px;
+      border-top: 1px solid #f3f4f6;
+      font-size: 10px;
+      color: #d1d5db;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">KP</div>
+    <div>
+      <div class="app-name">Kimi Polaris</div>
+      <div class="app-version">v0.1.0</div>
+    </div>
+  </div>
+
+  <div class="features">
+    <label class="feature-row" for="toggle-nav">
+      <div class="feature-icon">📑</div>
+      <div class="feature-text">
+        <div class="feature-name">长文时间线导航</div>
+        <div class="feature-desc">在右侧显示回复的大纲目录</div>
+      </div>
+      <div class="toggle">
+        <input type="checkbox" id="toggle-nav">
+        <span class="toggle-track"></span>
+      </div>
+    </label>
+  </div>
+
+  <div class="footer">仅在 www.kimi.com 生效</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

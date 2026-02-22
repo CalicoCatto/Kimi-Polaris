@@ -1,0 +1,7 @@
+<a class="new-chat-btn"><div class="action-label"><svg/>
+
+新建会话</div>
+
+<div class="action-opts"><div class="meta"><span>Ctrl</span></div>
+
+<span class="meta">K</span></div></a>
