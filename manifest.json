@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Kimi Polaris",
   "version": "1.0.0",
-  "description": "目前提供时间线导航和文件夹管理两个功能，极大提升 Kimi 网页端体验",
+  "description": "目前提供时间线导航和文件夹管理两个功能，极大提升 Kimi 网页端体验。更多功能正在抓紧开发！",
   "permissions": ["storage"],
   "content_scripts": [
     {
