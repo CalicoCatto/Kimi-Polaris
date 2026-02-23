@@ -7,8 +7,8 @@
     <p>
         在国产大模型的银河中，我青睐 Kimi 的月光。<br>
         带着诗意的技术，更能抵达人心。它如素笺映月，删繁就简，唯留思绪静静流淌。<br>
-        Kimi 2.5 的发布正式让 Kimi 进入了大模型第一梯队，我也为之欣喜。<br>
-        愿Kimi越来越好，祝月之暗面不断成长，也希望国产大模型群星闪耀。<br>
+        Kimi 2.5 的发布让 Kimi 进入了大模型第一梯队，我也为之欣喜。<br>
+        愿 Kimi 越来越好，祝月之暗面不断成长，也希望国产大模型群星闪耀。<br>
     </p>
 </div>
 
@@ -26,7 +26,7 @@
 
 在许多交互、图标的设计上也下了一些心思。但是还有很多没来得及优化的地方，会尽快修改的！
 
-我很喜欢 Moonshot 与 Kimi 的诗意，我也用了很多月光与音乐的元素。希望能让大家喜欢。
+月光与音乐的元素，也带有很多隐喻，构成了该项目Dee主要风格，希望能让大家喜欢。
 
 ### 目前仅支持Chrome浏览器和EDGE浏览器
 
@@ -38,11 +38,12 @@
 
 使用本扩展需遵守 Kimi 用户协议及相关法律法规。如因使用本扩展导致账号限制，开发者不承担责任。
 
+本项目并未参考 Gemini Voyager 任何代码，基于 Vibe Coding 从零开始构建。
 
 
 ### 如果有好的想法，或者反馈bug，欢迎联系我！
 <div align="center">
-  <img src="Icon/WeChat_QR_Code.jpg" alt="My Wechat QR Code" width="200" />
+  <img src="Images/WeChat_QR_Code.jpg" alt="My Wechat QR Code" width="200" />
 </div>
 
 
