@@ -15,11 +15,12 @@
 
 > 🚧 **开发中**  
 > 目前项目还在开发中，功能不完善，我会尽快努力的！ Love 💫
+
 > 目前仅支持Chrome浏览器和EDGE浏览器
 
 ### 当前功能的演示
 <div align="center">
-  <img src="Images/CurrentFeatureDemo.png" alt="当前功能演示" width="600" />
+  <img src="Images/CurrentFeatureDemo.png" alt="当前功能演示" width="800" />
   <p>
         目前1.0.0版本仅仅支持时间线导航和文件夹管理两个功能<br>
         还有很多功能添加与美化工作尚未进行 敬请期待<br>
